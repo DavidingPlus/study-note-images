@@ -33,7 +33,7 @@ jobs:
       run: |
         pwd
 
-        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress --excloude ".git/*" --excloude ".github/*"
+        rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress --exclude ".git/*" --exclude ".git/*/*"
 
         pwd
 

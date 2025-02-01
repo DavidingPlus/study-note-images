@@ -33,7 +33,7 @@ jobs:
       run: |
         cd /home/runner/work && mkdir -p sync && cd sync
 
-        rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
+        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
 
         cd ${{github.workspace}}
 

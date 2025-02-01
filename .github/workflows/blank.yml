@@ -19,3 +19,5 @@ jobs:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
         AWS_REGION: 'apac'
+        SOURCE_DIR: ''
+        DEST_DIR: './'

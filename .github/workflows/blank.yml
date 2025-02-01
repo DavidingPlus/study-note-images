@@ -40,4 +40,4 @@ jobs:
         git config user.email "actions@github.com"
         git add .
         git commit -m "Sync Cloudflare R2 data"
-        git push origin main
+        git push origin master

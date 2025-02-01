@@ -28,11 +28,11 @@ jobs:
         echo "region = us-east-1" >> ~/.config/rclone/rclone.conf
         echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ~/.config/rclone/rclone.conf
 
-    # - name: Sync data from Cloudflare R2 to GitHub
-    #   run: |
-    #     rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress
+    - name: Sync data from Cloudflare R2 to GitHub
+      run: |
+        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress
 
-    #     pwd
+        pwd
 
     # - name: Commit and push changes to GitHub
     #   run: |

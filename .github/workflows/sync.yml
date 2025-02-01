@@ -27,7 +27,7 @@ jobs:
         CONF_PATH: "~/.config/rclone/rclone.conf"
       run: |
         mkdir -p ${CONF_DIR}
-        echo "[cloudflare_r2]" > ${CONF_PATH}
+        echo "[cloudflare_r2]" >> ${CONF_PATH}
         echo "type = s3" >> ${CONF_PATH}
         echo "provider = Cloudflare" >> ${CONF_PATH}
         echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ${CONF_PATH}
@@ -39,9 +39,9 @@ jobs:
         SYNC_DIR: "/home/runner/work/sync"
         WORKSPACE: ${{github.workspace}}
       run: |
-        mkdir -p ${SYNC_DIR}
+        mkdir -p ${SYNC_DIR} && cd ${SYNC_DIR}
 
-        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ${SYNC_DIR} --progress
+        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
 
         cd ${WORKSPACE}
 

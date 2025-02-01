@@ -31,9 +31,9 @@ jobs:
     - name: Sync data from Cloudflare R2 to GitHub
       working-directory: ${{github.workspace}}
       run: |
-        pwd
+        cd /home/runner/work && mkdir -p sync && cd sync
 
-        rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress --exclude ".git/*" --exclude ".git/*/*"
+        rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
 
         pwd
 

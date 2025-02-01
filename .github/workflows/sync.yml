@@ -3,7 +3,11 @@ name: Sync Cloudflare R2 to GitHub
 on:
   push:
     branches:
-      - master  # 触发同步的分支
+      - master
+  schedule:
+    - cron: 0 4 * * *
+  watch:
+    types: [started]
 
 jobs:
   sync:
@@ -12,8 +16,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.1.1
-      with:
-        repository: ${{ github.repository }}
 
     - name: Install rclone
       run: |

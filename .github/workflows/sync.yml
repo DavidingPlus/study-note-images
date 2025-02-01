@@ -22,17 +22,14 @@ jobs:
         curl https://rclone.org/install.sh | sudo bash
 
     - name: Configure rclone for Cloudflare R2
-      env:
-        CONF_DIR: "~/.config/rclone"
-        CONF_PATH: "~/.config/rclone/rclone.conf"
       run: |
-        mkdir -p ${CONF_DIR}
-        echo "[cloudflare_r2]" >> ${CONF_PATH}
-        echo "type = s3" >> ${CONF_PATH}
-        echo "provider = Cloudflare" >> ${CONF_PATH}
-        echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ${CONF_PATH}
-        echo "secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ${CONF_PATH}
-        echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ${CONF_PATH}
+        mkdir -p ~/.config/rclone
+        echo "[cloudflare_r2]" > ~/.config/rclone/rclone.conf
+        echo "type = s3" >> ~/.config/rclone/rclone.conf
+        echo "provider = Cloudflare" >> ~/.config/rclone/rclone.conf
+        echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
+        echo "secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
+        echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ~/.config/rclone/rclone.conf
 
     - name: Sync data from Cloudflare R2 to GitHub
       env:

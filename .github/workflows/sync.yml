@@ -35,13 +35,18 @@ jobs:
 
         rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
 
-        cp ./* -r ${{github.workspace}}
+        cd ${{github.workspace}}
+
+        git checkout --orphan=images
+        git rm -rf .
+
+        cp /home/runner/work/sync/* -r ${{github.workspace}}
 
     - name: Commit and push changes to GitHub
       working-directory: ${{github.workspace}}
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .
         git commit -m "Sync Cloudflare R2 data"
-        git push
+        git push -u origin images -f

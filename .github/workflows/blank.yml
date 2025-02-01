@@ -1,23 +1,43 @@
-name: Upload Website
+name: Sync Cloudflare R2 to GitHub
 
 on:
-  watch:
-    types: [started]
+  push:
+    branches:
+      - master  # 触发同步的分支
 
 jobs:
-  deploy:
+  sync:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
 
-    - uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --follow-symlinks --delete
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
-        AWS_REGION: 'apac'
-        SOURCE_DIR: ''
-        DEST_DIR: './'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install rclone
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+
+    - name: Configure rclone for Cloudflare R2
+      run: |
+        mkdir -p ~/.config/rclone
+        echo "[cloudflare_r2]" > ~/.config/rclone/rclone.conf
+        echo "type = s3" >> ~/.config/rclone/rclone.conf
+        echo "provider = Other" >> ~/.config/rclone/rclone.conf
+        echo "env_auth = false" >> ~/.config/rclone/rclone.conf
+        echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
+        echo "secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
+        echo "region = us-east-1" >> ~/.config/rclone/rclone.conf
+        echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ~/.config/rclone/rclone.conf
+        echo "bucket_acl = private" >> ~/.config/rclone/rclone.conf
+
+    - name: Sync data from Cloudflare R2 to GitHub
+      run: |
+        rclone copy "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --create-empty-src-dirs --progress --exclude "*.git/*"
+
+    - name: Commit and push changes to GitHub
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add .
+        git commit -m "Sync Cloudflare R2 data"
+        git push origin main

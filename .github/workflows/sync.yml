@@ -1,4 +1,4 @@
-name: Sync Cloudflare R2 to GitHub
+name: Sync Cloudflare R2 Data to GitHub
 
 on:
   push:
@@ -22,29 +22,33 @@ jobs:
         curl https://rclone.org/install.sh | sudo bash
 
     - name: Configure rclone for Cloudflare R2
+      env:
+        CONF_DIR: "~/.config/rclone"
+        CONF_PATH: "~/.config/rclone/rclone.conf"
       run: |
-        mkdir -p ~/.config/rclone
-        echo "[cloudflare_r2]" > ~/.config/rclone/rclone.conf
-        echo "type = s3" >> ~/.config/rclone/rclone.conf
-        echo "provider = Cloudflare" >> ~/.config/rclone/rclone.conf
-        echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ~/.config/rclone/rclone.conf
-        echo "secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ~/.config/rclone/rclone.conf
-        echo "region = us-east-1" >> ~/.config/rclone/rclone.conf
-        echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ~/.config/rclone/rclone.conf
+        mkdir -p ${CONF_DIR}
+        echo "[cloudflare_r2]" > ${CONF_PATH}
+        echo "type = s3" >> ${CONF_PATH}
+        echo "provider = Cloudflare" >> ${CONF_PATH}
+        echo "access_key_id = ${{ secrets.R2_ACCESS_KEY_ID }}" >> ${CONF_PATH}
+        echo "secret_access_key = ${{ secrets.R2_SECRET_ACCESS_KEY }}" >> ${CONF_PATH}
+        echo "endpoint = ${{ secrets.R2_ENDPOINT }}" >> ${CONF_PATH}
 
     - name: Sync data from Cloudflare R2 to GitHub
-      working-directory: ${{github.workspace}}
+      env:
+        SYNC_DIR: "/home/runner/work/sync"
+        WORKSPACE: ${{github.workspace}}
       run: |
-        cd /home/runner/work && mkdir -p sync && cd sync
+        mkdir -p ${SYNC_DIR}
 
-        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ./ --progress
+        rclone sync "cloudflare_r2:${{ secrets.R2_BUCKET_NAME }}" ${SYNC_DIR} --progress
 
-        cd ${{github.workspace}}
+        cd ${WORKSPACE}
 
         git checkout --orphan=images
         git rm -rf .
 
-        cp /home/runner/work/sync/* -r ${{github.workspace}}
+        cp ${SYNC_DIR}/* -r ${WORKSPACE}
 
     - name: Commit and push changes to GitHub
       working-directory: ${{github.workspace}}
@@ -52,5 +56,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .
-        git commit -m "Sync Cloudflare R2 data"
+        git commit -m "Sync Cloudflare R2 Data"
         git push -u origin images -f

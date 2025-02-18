@@ -1,13 +1,12 @@
 name: Sync Cloudflare R2 Data to GitHub
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
   schedule:
     - cron: 0 4 * * *
-  watch:
-    types: [started]
 
 jobs:
   sync:
